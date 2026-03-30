@@ -1,0 +1,46 @@
+body {
+    margin: 0;
+    font-family: sans-serif;
+}
+
+/* Titlebar */
+.titlebar {
+    height: 30px;
+    background: #2b2b2b;
+    color: white;
+
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    -webkit-app-region: drag;
+}
+
+.window-controls {
+    display: flex;
+}
+
+.window-controls button {
+    width: 45px;
+    height: 30px;
+
+    border: none;
+    background: transparent;
+    color: white;
+
+    font-size: 12px;
+    cursor: pointer;
+
+    -webkit-app-region: no-drag;
+}
+
+.window-controls button:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+#titlebar-btn-close:hover {
+    background: #e81123;
+}
+
+.content {
+    padding: 20px;
+}
