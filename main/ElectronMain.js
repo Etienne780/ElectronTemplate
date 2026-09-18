@@ -1,39 +1,69 @@
 import { app, BrowserWindow } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { registerIpcHandlers } from './ipc/handlers.js';
+import { registerIpcHandlers } from './ipc/Handlers.js';
+import { setupLinkOpen } from './window/SetupLinkOpen.js'
+import { setupZoom } from './window/SetupZoom.js';
+import { loadWindowState, setupWindowState } from './window/WindowState.js';
+import { tempFileManager } from './fs/TempFileManager.js';
+import { getLogoPath } from './Common.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-let mainWindow;
+let mainWindow = null;
 
 async function createWindow() {
   const isMac = process.platform === 'darwin';
+  const isDev = !app.isPackaged && process.env.NODE_ENV !== 'production';
+
+  const savedState = loadWindowState();
 
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: savedState.width,
+    height: savedState.height,
+    x: savedState.x,
+    y: savedState.y,
+    minWidth: 700,
+    minHeight: 400,
+    icon: getLogoPath(), // Linux/Windows
     ...(isMac
       ? { titleBarStyle: 'hiddenInset' }
-      : { frame: false, }),
+      : { frame: isDev ? false : false /* hides top tool bar, NEEDS to be false in release builds */ }),
     webPreferences: {
-        preload: path.join(__dirname, '../preload/preload.js')
+      preload: path.join(__dirname, '../preload/preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true
     }
   });
 
-  if (process.env.NODE_ENV === 'development') {
+  setupWindowState(mainWindow);
+  setupLinkOpen(mainWindow);
+  setupZoom(mainWindow);
+
+  registerIpcHandlers(mainWindow);
+
+  if (isDev) {
     await mainWindow.loadURL('http://localhost:5173');
     mainWindow.webContents.openDevTools();
   } else {
-    await mainWindow.loadFile(
-      path.join(__dirname, '../renderer/dist/index.html')
-    );
+    const rendererPath = path.resolve(__dirname, '../renderer/dist/index.html');
+    await mainWindow.loadFile(rendererPath);
   }
 }
 
+/*const gotLock = app.requestSingleInstanceLock();
+if (!gotLock) {
+  app.quit();
+} else {
+  app.on('second-instance', (event, argv) => {
+    
+  });
+}*/
+
 app.whenReady().then(() => {
-  registerIpcHandlers();
+  tempFileManager.start();
   createWindow();
 
   app.on('activate', () => {

@@ -1,32 +1,35 @@
-import { getPlatform } from '../main.js';
+import { isPlatformMacOS, isPlatformWeb } from '@core/Platform.js';
+
+export function getWindowControlsHTML(opt) {
+  const { minClass, maxClass, closeClass } = opt;
+
+  return `<button class="${minClass ?? ''}" data-win-min><span>—</span></button>
+    <button class="${maxClass ?? ''}" data-win-max><span>□</span></button>
+    <button class="${closeClass ?? ''}" data-win-close><span>✕</span></button>`;
+}
 
 // Handle custom titlebar interactions
 export function initWindowControls() {
-  const isMac = getPlatform() === 'macOS';
-  const titlebar = document.getElementById('titlebar');
-
-  // macOS: native titlebar nutzen → custom ausblenden
-  if (isMac) {
-      if (titlebar) {
-          titlebar.style.display = 'none';
-      }
-      return;
-  }
-
-  if (!titlebar || !window.electronAPI) 
+  if (isPlatformMacOS() || isPlatformWeb() || !window.electronAPI)
     return;
 
-  titlebar.addEventListener('dblclick', () => {
-      window.electronAPI.maximize();
+  document.querySelectorAll('[data-win-bar]').forEach(btn => {
+    btn.addEventListener('dblclick', (event) => {
+      if (event.target === event.currentTarget) {
+        window.electronAPI.maximize();
+      }
+    });
   });
 
-  document.getElementById('titlebar-btn-min')?.addEventListener('click', () => {
-      window.electronAPI.minimize();
+  document.querySelectorAll('[data-win-min]').forEach(btn => {
+    btn.addEventListener('click', () => window.electronAPI.minimize());
   });
-  document.getElementById('titlebar-btn-max')?.addEventListener('click', () => {
-      window.electronAPI.maximize();
+
+  document.querySelectorAll('[data-win-max]').forEach(btn => {
+    btn.addEventListener('click', () => window.electronAPI.maximize());
   });
-  document.getElementById('titlebar-btn-close')?.addEventListener('click', () => {
-      window.electronAPI.close();
+
+  document.querySelectorAll('[data-win-close]').forEach(btn => {
+    btn.addEventListener('click', () => window.electronAPI.close());
   });
 }

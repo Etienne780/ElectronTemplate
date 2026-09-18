@@ -2,6 +2,8 @@
 import { defineConfig } from 'vite';
 import path from 'path';
 
+const dirname = import.meta.dirname;
+
 export default defineConfig({
     root: 'renderer',
     base: './',
@@ -11,10 +13,9 @@ export default defineConfig({
     },
     resolve: {
         alias: {
-            '@core': path.resolve(__dirname, 'renderer/core'),
-            '@data': path.resolve(__dirname, 'renderer/data'),
-            '@common': path.resolve(__dirname, 'renderer/common'),
-            '@views': path.resolve(__dirname, 'renderer/views')
+            '@core': path.resolve(dirname, 'renderer/core'),
+            '@common': path.resolve(dirname, 'renderer/common'),
+            '@ui': path.resolve(dirname, 'renderer/ui'),
         }
     }
 });

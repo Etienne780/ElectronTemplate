@@ -10,9 +10,6 @@ module.exports = {
   makers: [
     {
       name: '@electron-forge/maker-squirrel', // Windows Installer
-      config: {
-        setupIcon: 'assets/icons/icon.ico'
-      },
     },
     {
       name: '@electron-forge/maker-zip', // ZIP für macOS
@@ -20,15 +17,9 @@ module.exports = {
     },
     {
       name: '@electron-forge/maker-deb', // Linux Debian
-      config: {
-        icon: 'assets/icons/icon.png'
-      },
     },
     {
       name: '@electron-forge/maker-rpm', // Linux RedHat/Fedora
-      config: {
-        icon: 'assets/icons/icon.png'
-      },
     },
   ],
   plugins: [
