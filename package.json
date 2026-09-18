@@ -5,15 +5,19 @@
   "license": "MIT",
   "author": "Etienne780",
   "type": "module",
-  "main": "main/electronMain.js",
+  "main": "main/ElectronMain.js",
   "scripts": {
     "dev:renderer": "vite",
     "dev:electron": "cross-env NODE_ENV=development electron .",
     "dev": "npm-run-all -p dev:renderer dev:electron",
+    "clean": "powershell -Command \"if (Test-Path dist) { Remove-Item -Recurse -Force dist }; if (Test-Path out) { Remove-Item -Recurse -Force out }\"",
     "build": "vite build",
-    "start": "electron-forge start",
-    "package": "electron-forge package",
-    "make": "electron-forge make"
+    "start": "cross-env NODE_ENV=production electron .",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win",
+    "dist:mac": "electron-builder --mac",
+    "dist:linux": "electron-builder --linux",
+    "help": "echo \"use 'dev' for development\" && echo \"use 'build' for production build\" && echo \"use 'start' for electron-forge start\" && echo \"use 'dist' for electron-builder\""
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.11.1",
